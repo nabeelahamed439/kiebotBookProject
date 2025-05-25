@@ -32,12 +32,22 @@ The application will start on `http://localhost:8080`
 ### Search Books
 Search for books with various filtering criteria.
 
+1. **Basic Search by Title**:
 ```bash
-curl -X GET 'http://localhost:8080/api/v1/books/search?genre=FICTION&title=Cosmos&page=0&size=20&sort=title,asc'
+curl -X GET 'http://localhost:8080/api/v1/books/search?title=Cosmos&page=0&size=0'
 ```
-
-
-
+**Advanced Search with Multiple Criteria:**:
+```bash
+curl -X GET 'http://localhost:8080/api/v1/books/search?authorName=Sagan&genre=SCIENCE&publicationYearFrom=1970&publicationYearTo=1990&sort=publicationYear,asc'
+```
+**Search for Books Currently Loaned by a Specific Member**:
+```bash
+curl -X GET 'http://localhost:8080/api/v1/books/search?loanedByMemberId=MEM-AB1234&page=0&size=5'
+```
+**Search for Available Books**:
+```bash
+curl -X GET 'http://localhost:8080/api/v1/books/search?isAvailable=true&genre=TECHNOLOGY&sort=title,asc'
+```
 
 ## Assumptions and Design Decisions
 

@@ -6,6 +6,6 @@ import java.time.LocalDateTime;
 
 @Data
 public class ReservationSummary {
-    private Long memberId;
+    private String memberId;
     private LocalDateTime reservationDate;
 }

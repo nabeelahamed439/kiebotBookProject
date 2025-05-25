@@ -18,7 +18,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             + "WHERE (:isbn = 'ALL' OR b.isbn = :isbn) "
             + "AND (:title = 'ALL' OR (b.title) ILIKE (CONCAT('%', :title, '%'))) "
             + "AND (:authorName = 'ALL' OR (a.name) ILIKE (CONCAT('%', :authorName, '%'))) "
-            + "AND (:genre IS NULL OR UPPER(b.genre) = UPPER(:genre)) "
+            + "AND (:genre = 'ALL' OR UPPER(b.genre) = UPPER(:genre)) "
             + "AND (:publicationYearFrom = -214748364 OR b.publicationYear >= :publicationYearFrom) "
             + "AND (:publicationYearTo = 214748364 OR b.publicationYear <= :publicationYearTo) "
             + "AND (:publisher = 'ALL' OR (b.publisher) ILIKE (CONCAT('%', :publisher, '%'))) "
@@ -28,7 +28,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             + "AND (:loanedByMemberId = 'ALL' OR EXISTS (SELECT 1 FROM BookLoan bl3 WHERE bl3.book = b AND bl3.member.memberId = :loanedByMemberId AND bl3.status = 'ACTIVE')) "
             + "AND (:reservedByMemberId = 'ALL' OR EXISTS (SELECT 1 FROM Reservation r2 WHERE r2.book = b AND r2.member.memberId = :reservedByMemberId AND r2.status IN ('PENDING', 'READY_FOR_PICKUP')))"
     )
-    List<Book> searchBooks(
+    Page<Book> searchBooks(
             @Param("isbn") String isbn,
             @Param("title") String title,
             @Param("authorName") String authorName,

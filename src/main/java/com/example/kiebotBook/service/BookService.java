@@ -13,6 +13,7 @@ import com.example.kiebotBook.repository.BookRepository;
 import com.example.kiebotBook.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -32,7 +33,7 @@ public class BookService {
 
 
 
-    public List<BookDTO> searchBook(String isbn,
+    public Page<BookDTO> searchBook(String isbn,
                                     String title,
                                     String authorName,
                                     String genre,
@@ -57,6 +58,7 @@ public class BookService {
 
 
         isbn = (isbn == null || isbn.isEmpty()) ? "ALL" : isbn;
+        genre = (genre == null || genre.isEmpty()) ? "ALL" : genre;
         title = (title == null || title.isEmpty()) ? "ALL" : title;
         authorName = (authorName == null || authorName.isEmpty()) ? "ALL" : authorName;
         publicationYearFrom = (publicationYearFrom == null) ? Integer.MIN_VALUE : publicationYearFrom;
@@ -67,26 +69,24 @@ public class BookService {
         reservedByMemberId = (reservedByMemberId == null || reservedByMemberId.isEmpty()) ? "ALL" : reservedByMemberId;
 
 
-
-        if (genre != null) {
+        if (!genre.equalsIgnoreCase("ALL")) {
+            String finalGenre = genre;
             boolean isValidGenre  = Arrays.stream(Book.Genre.values())
-                    .anyMatch(genreValue -> genreValue.name().equalsIgnoreCase(genre));
+                    .anyMatch(genreValue -> genreValue.name().equalsIgnoreCase(finalGenre));
 
             if (!isValidGenre)
                 throw new BadRequestException( "Invalid parameter value","genre","Must be one of " + Arrays.toString(Book.Genre.values()));
         }
 
 
-        List<Book> books = bookRepository.searchBooks(
+        Page<Book> books = bookRepository.searchBooks(
                     isbn, title, authorName, genre,
                     publicationYearFrom, publicationYearTo,
                     publisher, isAvailable,
-                    loanedByMemberId, reservedByMemberId,pageable
-            );
+                    loanedByMemberId, reservedByMemberId,pageable);
 
 
-        return books.stream().map(this::convertToDTO).collect(Collectors.toList());
-        
+        return books.map(this::convertToDTO);
     }
 
     private BookDTO convertToDTO(Book book) {
@@ -110,14 +110,14 @@ public class BookService {
 
         List<LoanSummary> loanSummaryList = bookLoan.stream().map(loan -> {
             LoanSummary loanSummary = new LoanSummary();
-            loanSummary.setMemberId(loan.getMember().getId());
+            loanSummary.setMemberId(loan.getMember().getMemberId());
             loanSummary.setDueDate(loan.getDueDate());
             return loanSummary;
         }).toList();
 
         List<ReservationSummary> reservationSummaryList = reservationList.stream().map(reservation -> {
             ReservationSummary reservationSummary = new ReservationSummary();
-            reservationSummary.setMemberId(reservation.getMember().getId());
+            reservationSummary.setMemberId(reservation.getMember().getMemberId());
             reservationSummary.setReservationDate(reservation.getReservationDate());
             return reservationSummary;
         }).toList();

@@ -5,6 +5,7 @@ import com.example.kiebotBook.model.BookDTO;
 import com.example.kiebotBook.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,7 +23,7 @@ public class BookController {
 
 
     @GetMapping("/search")
-    public List<BookDTO> searchBooks(
+    public Page<BookDTO> searchBooks(
             @RequestParam(required = false) String isbn,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String authorName,

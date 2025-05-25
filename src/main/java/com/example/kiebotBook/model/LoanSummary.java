@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 @Data
 public  class LoanSummary {
-    private Long memberId;
+    private String memberId;
     private LocalDate dueDate;
 
 }
